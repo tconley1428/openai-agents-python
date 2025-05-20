@@ -45,7 +45,7 @@ from .models.openai_chatcompletions import OpenAIChatCompletionsModel
 from .models.openai_provider import OpenAIProvider
 from .models.openai_responses import OpenAIResponsesModel
 from .result import RunResult, RunResultStreaming
-from .run import RunConfig, Runner
+from .run import DefaultRunner, RunConfig, Runner, set_default_runner
 from .run_context import RunContextWrapper, TContext
 from .stream_events import (
     AgentUpdatedStreamEvent,
@@ -150,6 +150,7 @@ __all__ = [
     "ToolsToFinalOutputFunction",
     "ToolsToFinalOutputResult",
     "Runner",
+    "DefaultRunner",
     "Model",
     "ModelProvider",
     "ModelTracing",
@@ -244,6 +245,7 @@ __all__ = [
     "set_default_openai_key",
     "set_default_openai_client",
     "set_default_openai_api",
+    "set_default_runner",
     "set_tracing_export_api_key",
     "enable_verbose_stdout_logging",
     "gen_trace_id",
