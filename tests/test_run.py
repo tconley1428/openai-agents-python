@@ -17,10 +17,10 @@ async def test_static_run_methods_call_into_default_runner() -> None:
 
     agent = Agent(name="test", model=FakeModel())
     await Runner.run(agent, input="test")
-    runner.run_impl.assert_called_once()
+    runner._run_impl.assert_called_once()
 
     Runner.run_streamed(agent, input="test")
-    runner.run_streamed_impl.assert_called_once()
+    runner._run_streamed_impl.assert_called_once()
 
     Runner.run_sync(agent, input="test")
-    runner.run_sync_impl.assert_called_once()
+    runner._run_sync_impl.assert_called_once()

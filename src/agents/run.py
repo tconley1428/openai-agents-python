@@ -118,7 +118,7 @@ class RunConfig:
 
 class Runner(abc.ABC):
     @abc.abstractmethod
-    async def run_impl(
+    async def _run_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -132,7 +132,7 @@ class Runner(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def run_sync_impl(
+    def _run_sync_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -146,7 +146,7 @@ class Runner(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def run_streamed_impl(
+    def _run_streamed_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -197,7 +197,7 @@ class Runner(abc.ABC):
             agent. Agents may perform handoffs, so we don't know the specific type of the output.
         """
         runner = DEFAULT_RUNNER or DefaultRunner()
-        return await runner.run_impl(
+        return await runner._run_impl(
             starting_agent,
             input,
             context=context,
@@ -249,7 +249,7 @@ class Runner(abc.ABC):
             agent. Agents may perform handoffs, so we don't know the specific type of the output.
         """
         runner = DEFAULT_RUNNER or DefaultRunner()
-        return runner.run_sync_impl(
+        return runner._run_sync_impl(
             starting_agent,
             input,
             context=context,
@@ -297,7 +297,7 @@ class Runner(abc.ABC):
             A result object that contains data about the run, as well as a method to stream events.
         """
         runner = DEFAULT_RUNNER or DefaultRunner()
-        return runner.run_streamed_impl(
+        return runner._run_streamed_impl(
             starting_agent,
             input,
             context=context,
@@ -339,7 +339,7 @@ class Runner(abc.ABC):
 
 
 class DefaultRunner(Runner):
-    async def run_impl(
+    async def _run_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -488,7 +488,7 @@ class DefaultRunner(Runner):
                 if current_span:
                     current_span.finish(reset_current=True)
 
-    def run_sync_impl(
+    def _run_sync_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -511,7 +511,7 @@ class DefaultRunner(Runner):
             )
         )
 
-    def run_streamed_impl(
+    def _run_streamed_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -564,7 +564,7 @@ class DefaultRunner(Runner):
 
         # Kick off the actual agent loop in the background and return the streamed result object.
         streamed_result._run_impl_task = asyncio.create_task(
-            self._run_streamed_impl(
+            self._start_streaming(
                 starting_input=input,
                 streamed_result=streamed_result,
                 starting_agent=starting_agent,
@@ -621,7 +621,7 @@ class DefaultRunner(Runner):
         streamed_result.input_guardrail_results = guardrail_results
 
     @classmethod
-    async def _run_streamed_impl(
+    async def _start_streaming(
         cls,
         starting_input: str | list[TResponseInputItem],
         streamed_result: RunResultStreaming,
