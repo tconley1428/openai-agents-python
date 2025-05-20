@@ -49,7 +49,7 @@ DEFAULT_MAX_TURNS = 10
 DEFAULT_RUNNER: Runner | None = None
 
 
-def set_default_runner(runner: Runner) -> None:
+def set_default_runner(runner: Runner | None) -> None:
     """
     Set the default runner to use for the agent run.
     """
@@ -146,7 +146,7 @@ class Runner(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def run_streaming_impl(
+    def run_streamed_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
@@ -297,7 +297,7 @@ class Runner(abc.ABC):
             A result object that contains data about the run, as well as a method to stream events.
         """
         runner = DEFAULT_RUNNER or DefaultRunner()
-        return runner.run_streaming_impl(
+        return runner.run_streamed_impl(
             starting_agent,
             input,
             context=context,
@@ -511,7 +511,7 @@ class DefaultRunner(Runner):
             )
         )
 
-    def run_streaming_impl(
+    def run_streamed_impl(
         self,
         starting_agent: Agent[TContext],
         input: str | list[TResponseInputItem],
