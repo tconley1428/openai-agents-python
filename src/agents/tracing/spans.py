@@ -178,7 +178,7 @@ class SpanImpl(Span[TSpanData]):
         span_data: TSpanData,
     ):
         self._trace_id = trace_id
-        self._span_id = span_id or util.gen_span_id()
+        self._span_id = span_id
         self._parent_id = parent_id
         self._started_at: str | None = None
         self._ended_at: str | None = None
