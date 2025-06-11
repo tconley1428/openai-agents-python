@@ -382,7 +382,7 @@ class DefaultRunner(Runner):
 
             try:
                 while True:
-                    all_tools = await cls._get_all_tools(current_agent, context_wrapper)
+                    all_tools = await DefaultRunner._get_all_tools(current_agent, context_wrapper)
 
                     # Start an agent span if we don't have one. This span is ended if the current
                     # agent changes, or if the agent loop ends.
