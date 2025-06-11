@@ -5,7 +5,7 @@ import time
 from collections.abc import AsyncIterator
 from typing import Any, Literal, cast, overload
 
-import litellm.types
+from openai.types.responses.response_usage import InputTokensDetails, OutputTokensDetails
 
 from agents.exceptions import ModelBehaviorError
 
@@ -107,6 +107,18 @@ class LitellmModel(Model):
                         input_tokens=response_usage.prompt_tokens,
                         output_tokens=response_usage.completion_tokens,
                         total_tokens=response_usage.total_tokens,
+                        input_tokens_details=InputTokensDetails(
+                            cached_tokens=getattr(
+                                response_usage.prompt_tokens_details, "cached_tokens", 0
+                            )
+                            or 0
+                        ),
+                        output_tokens_details=OutputTokensDetails(
+                            reasoning_tokens=getattr(
+                                response_usage.completion_tokens_details, "reasoning_tokens", 0
+                            )
+                            or 0
+                        ),
                     )
                     if response.usage
                     else Usage()
@@ -271,6 +283,10 @@ class LitellmModel(Model):
             extra_kwargs["metadata"] = model_settings.metadata
         if model_settings.extra_body and isinstance(model_settings.extra_body, dict):
             extra_kwargs.update(model_settings.extra_body)
+
+        # Add kwargs from model_settings.extra_args, filtering out None values
+        if model_settings.extra_args:
+            extra_kwargs.update(model_settings.extra_args)
 
         ret = await litellm.acompletion(
             model=self.model,

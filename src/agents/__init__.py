@@ -14,6 +14,7 @@ from .exceptions import (
     MaxTurnsExceeded,
     ModelBehaviorError,
     OutputGuardrailTripwireTriggered,
+    RunErrorDetails,
     UserError,
 )
 from .guardrail import (
@@ -44,6 +45,7 @@ from .models.interface import Model, ModelProvider, ModelTracing
 from .models.openai_chatcompletions import OpenAIChatCompletionsModel
 from .models.openai_provider import OpenAIProvider
 from .models.openai_responses import OpenAIResponsesModel
+from .repl import run_demo_loop
 from .result import RunResult, RunResultStreaming
 from .run import DefaultRunner, RunConfig, Runner, set_default_runner
 from .run_context import RunContextWrapper, TContext
@@ -54,10 +56,19 @@ from .stream_events import (
     StreamEvent,
 )
 from .tool import (
+    CodeInterpreterTool,
     ComputerTool,
     FileSearchTool,
     FunctionTool,
     FunctionToolResult,
+    HostedMCPTool,
+    ImageGenerationTool,
+    LocalShellCommandRequest,
+    LocalShellExecutor,
+    LocalShellTool,
+    MCPToolApprovalFunction,
+    MCPToolApprovalFunctionResult,
+    MCPToolApprovalRequest,
     Tool,
     WebSearchTool,
     default_tool_error_function,
@@ -152,6 +163,7 @@ __all__ = [
     "ToolsToFinalOutputResult",
     "Runner",
     "DefaultRunner",
+    "run_demo_loop",
     "Model",
     "ModelProvider",
     "ModelTracing",
@@ -197,6 +209,7 @@ __all__ = [
     "AgentHooks",
     "RunContextWrapper",
     "TContext",
+    "RunErrorDetails",
     "RunResult",
     "RunResultStreaming",
     "RunConfig",
@@ -208,8 +221,17 @@ __all__ = [
     "FunctionToolResult",
     "ComputerTool",
     "FileSearchTool",
+    "CodeInterpreterTool",
+    "ImageGenerationTool",
+    "LocalShellCommandRequest",
+    "LocalShellExecutor",
+    "LocalShellTool",
     "Tool",
     "WebSearchTool",
+    "HostedMCPTool",
+    "MCPToolApprovalFunction",
+    "MCPToolApprovalRequest",
+    "MCPToolApprovalFunctionResult",
     "function_tool",
     "Usage",
     "add_trace_processor",
