@@ -47,6 +47,7 @@ __all__ = [
     "generation_span",
     "get_current_span",
     "get_current_trace",
+    "get_trace_provider",
     "guardrail_span",
     "handoff_span",
     "response_span",

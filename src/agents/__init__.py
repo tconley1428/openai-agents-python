@@ -241,6 +241,7 @@ __all__ = [
     "generation_span",
     "get_current_span",
     "get_current_trace",
+    "get_default_runner",
     "guardrail_span",
     "handoff_span",
     "set_trace_processors",

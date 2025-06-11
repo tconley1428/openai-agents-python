@@ -47,7 +47,8 @@ from .usage import Usage
 from .util import _coro, _error_tracing
 
 DEFAULT_MAX_TURNS = 10
-DEFAULT_RUNNER: Runner | None = None
+DEFAULT_RUNNER: Runner = None # type: ignore
+# assigned at the end of the module initialization
 
 
 def set_default_runner(runner: Runner | None) -> None:
@@ -55,7 +56,14 @@ def set_default_runner(runner: Runner | None) -> None:
     Set the default runner to use for the agent run.
     """
     global DEFAULT_RUNNER
-    DEFAULT_RUNNER = runner
+    DEFAULT_RUNNER = runner or DefaultRunner()
+
+def get_default_runner() -> Runner | None:
+    """
+    Get the default runner to use for the agent run.
+    """
+    global DEFAULT_RUNNER
+    return DEFAULT_RUNNER
 
 
 @dataclass
@@ -197,7 +205,7 @@ class Runner(abc.ABC):
             A run result containing all the inputs, guardrail results and the output of the last
             agent. Agents may perform handoffs, so we don't know the specific type of the output.
         """
-        runner = DEFAULT_RUNNER or DefaultRunner()
+        runner = DEFAULT_RUNNER
         return await runner._run_impl(
             starting_agent,
             input,
@@ -249,7 +257,7 @@ class Runner(abc.ABC):
             A run result containing all the inputs, guardrail results and the output of the last
             agent. Agents may perform handoffs, so we don't know the specific type of the output.
         """
-        runner = DEFAULT_RUNNER or DefaultRunner()
+        runner = DEFAULT_RUNNER
         return runner._run_sync_impl(
             starting_agent,
             input,
@@ -297,7 +305,7 @@ class Runner(abc.ABC):
         Returns:
             A result object that contains data about the run, as well as a method to stream events.
         """
-        runner = DEFAULT_RUNNER or DefaultRunner()
+        runner = DEFAULT_RUNNER
         return runner._run_streamed_impl(
             starting_agent,
             input,
@@ -1130,3 +1138,5 @@ class DefaultRunner(Runner):
             return agent.model
 
         return run_config.model_provider.get_model(agent.model)
+
+DEFAULT_RUNNER = DefaultRunner()
