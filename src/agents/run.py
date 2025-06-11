@@ -316,37 +316,6 @@ class Runner(abc.ABC):
             previous_response_id=previous_response_id,
         )
 
-    @classmethod
-    def _get_output_schema(cls, agent: Agent[Any]) -> AgentOutputSchemaBase | None:
-        if agent.output_type is None or agent.output_type is str:
-            return None
-        elif isinstance(agent.output_type, AgentOutputSchemaBase):
-            return agent.output_type
-
-        return AgentOutputSchema(agent.output_type)
-
-    @classmethod
-    def _get_handoffs(cls, agent: Agent[Any]) -> list[Handoff]:
-        handoffs = []
-        for handoff_item in agent.handoffs:
-            if isinstance(handoff_item, Handoff):
-                handoffs.append(handoff_item)
-            elif isinstance(handoff_item, Agent):
-                handoffs.append(handoff(handoff_item))
-        return handoffs
-
-    @classmethod
-    def _get_model(cls, agent: Agent[Any], run_config: RunConfig) -> Model:
-        if isinstance(run_config.model, Model):
-            return run_config.model
-        elif isinstance(run_config.model, str):
-            return run_config.model_provider.get_model(run_config.model)
-        elif isinstance(agent.model, Model):
-            return agent.model
-
-        return run_config.model_provider.get_model(agent.model)
-
-
 class DefaultRunner(Runner):
     async def _run_impl(
         self,
@@ -390,7 +359,7 @@ class DefaultRunner(Runner):
 
             try:
                 while True:
-                    all_tools = await DefaultRunner._get_all_tools(current_agent, context_wrapper)
+                    all_tools = await self._get_all_tools(current_agent, context_wrapper)
 
                     # Start an agent span if we don't have one. This span is ended if the current
                     # agent changes, or if the agent loop ends.
