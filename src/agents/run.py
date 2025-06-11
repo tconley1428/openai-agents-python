@@ -316,6 +316,43 @@ class Runner(abc.ABC):
             previous_response_id=previous_response_id,
         )
 
+
+    @classmethod
+    def _get_output_schema(cls, agent: Agent[Any]) -> AgentOutputSchemaBase | None:
+        if agent.output_type is None or agent.output_type is str:
+            return None
+        elif isinstance(agent.output_type, AgentOutputSchemaBase):
+            return agent.output_type
+
+        return AgentOutputSchema(agent.output_type)
+
+    @classmethod
+    def _get_handoffs(cls, agent: Agent[Any]) -> list[Handoff]:
+        handoffs = []
+        for handoff_item in agent.handoffs:
+            if isinstance(handoff_item, Handoff):
+                handoffs.append(handoff_item)
+            elif isinstance(handoff_item, Agent):
+                handoffs.append(handoff(handoff_item))
+        return handoffs
+
+    @classmethod
+    async def _get_all_tools(
+        cls, agent: Agent[Any], context_wrapper: RunContextWrapper[Any]
+    ) -> list[Tool]:
+        return await agent.get_all_tools(context_wrapper)
+
+    @classmethod
+    def _get_model(cls, agent: Agent[Any], run_config: RunConfig) -> Model:
+        if isinstance(run_config.model, Model):
+            return run_config.model
+        elif isinstance(run_config.model, str):
+            return run_config.model_provider.get_model(run_config.model)
+        elif isinstance(agent.model, Model):
+            return agent.model
+
+        return run_config.model_provider.get_model(agent.model)
+
 class DefaultRunner(Runner):
     async def _run_impl(
         self,
@@ -1072,40 +1109,5 @@ class DefaultRunner(Runner):
 
         return new_response
 
-    @classmethod
-    def _get_output_schema(cls, agent: Agent[Any]) -> AgentOutputSchemaBase | None:
-        if agent.output_type is None or agent.output_type is str:
-            return None
-        elif isinstance(agent.output_type, AgentOutputSchemaBase):
-            return agent.output_type
-
-        return AgentOutputSchema(agent.output_type)
-
-    @classmethod
-    def _get_handoffs(cls, agent: Agent[Any]) -> list[Handoff]:
-        handoffs = []
-        for handoff_item in agent.handoffs:
-            if isinstance(handoff_item, Handoff):
-                handoffs.append(handoff_item)
-            elif isinstance(handoff_item, Agent):
-                handoffs.append(handoff(handoff_item))
-        return handoffs
-
-    @classmethod
-    async def _get_all_tools(
-        cls, agent: Agent[Any], context_wrapper: RunContextWrapper[Any]
-    ) -> list[Tool]:
-        return await agent.get_all_tools(context_wrapper)
-
-    @classmethod
-    def _get_model(cls, agent: Agent[Any], run_config: RunConfig) -> Model:
-        if isinstance(run_config.model, Model):
-            return run_config.model
-        elif isinstance(run_config.model, str):
-            return run_config.model_provider.get_model(run_config.model)
-        elif isinstance(agent.model, Model):
-            return agent.model
-
-        return run_config.model_provider.get_model(agent.model)
 
 DEFAULT_RUNNER = DefaultRunner()
