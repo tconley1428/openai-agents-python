@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Mapping
 from dataclasses import dataclass, fields, replace
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, Union
 
 from openai import Omit as _Omit
 from openai._types import Body, Query
@@ -44,7 +44,7 @@ class _OmitTypeAnnotation:
             ),
         )
 Omit = Annotated[_Omit, _OmitTypeAnnotation]
-Headers: TypeAlias = Mapping[str, str | Omit]
+Headers: TypeAlias = Mapping[str, Union[str, Omit]]
 
 @dataclass
 class ModelSettings:
