@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Mapping
 from dataclasses import dataclass, fields, replace
-from typing import Any, Literal, Annotated, TypeAlias, Mapping
+from typing import Annotated, Any, Literal
 
 from openai import Omit as _Omit
 from openai._types import Body, Query
@@ -10,6 +11,8 @@ from openai.types.responses import ResponseIncludable
 from openai.types.shared import Reasoning
 from pydantic import BaseModel, GetCoreSchemaHandler
 from pydantic_core import core_schema
+from typing_extensions import TypeAlias
+
 
 class _OmitTypeAnnotation:
     @classmethod

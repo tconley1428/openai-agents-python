@@ -4,6 +4,7 @@ from dataclasses import fields
 from openai.types.shared import Reasoning
 from pydantic import TypeAdapter
 from pydantic_core import to_json
+
 from agents.model_settings import ModelSettings
 
 
